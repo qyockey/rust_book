@@ -7,7 +7,7 @@ pub struct MenuItem<T> {
 }
 
 
-fn read_line(prompt: &String) -> String {
+fn read_line(prompt: &str) -> String {
     loop {
         print!("{prompt} ");
         let _ = io::stdout().flush();
@@ -21,8 +21,7 @@ fn read_line(prompt: &String) -> String {
 }
 
 
-pub fn read_value<T: std::str::FromStr>(prompt: &String, err_msg: &String)
-        -> T {
+pub fn read_value<T: std::str::FromStr>(prompt: &str, err_msg: &str) -> T {
     loop {
         match read_line(prompt).trim().parse() {
             Ok(val) => break val,
@@ -40,8 +39,8 @@ pub fn read_menu_option<T>(menu: &Vec<MenuItem<T>>) -> &T {
     }
 
     loop {
-        let selected = read_value::<usize>(&String::from("Select conversion:"),
-                &String::from("Please enter a valid option."));
+        let selected = read_value::<usize>("Select conversion:",
+                "Please enter a valid option.");
 
         // explicit check to prevent overflow
         if selected == 0 {

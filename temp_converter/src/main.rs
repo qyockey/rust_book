@@ -19,10 +19,14 @@ fn cel_to_fahr(degrees_c: f64) -> f64 {
 
 fn main() {
     let conversion_menu = vec![
-        input::MenuItem { message: String::from("Fahrenheight to Celsius"),
-                   data: Conversion::FahrenheightToCelsius},
-        input::MenuItem { message: String::from("Celsius to Fahrenheight"),
-                   data: Conversion::CelsiusToFahrenheight},
+        input::MenuItem {
+            message: String::from("Fahrenheight to Celsius"),
+            data: Conversion::FahrenheightToCelsius
+        },
+        input::MenuItem {
+            message: String::from("Celsius to Fahrenheight"),
+            data: Conversion::CelsiusToFahrenheight
+        },
     ];
 
     let conversion = input::read_menu_option::<Conversion>(&conversion_menu);
@@ -45,7 +49,7 @@ fn main() {
 
     let src_degrees = input::read_value::<f64>(&format!(
             "Enter temperature (°{src_degree_symbol}):"),
-            &String::from("Please enter a valid decimal number."));
+            "Please enter a valid decimal number.");
     let target_degrees = convert(src_degrees);
     println!("{src_degrees}°{src_degree_symbol} is equivalent to \
              {target_degrees}°{target_degree_symbol}.");
