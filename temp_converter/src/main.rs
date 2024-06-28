@@ -1,9 +1,11 @@
 mod input;
 
 
-enum Conversion {
-    FahrenheightToCelsius,
-    CelsiusToFahrenheight,
+#[derive(Copy, Clone, Debug)]
+struct Conversion {
+    source_degree_symbol: char,
+    target_degree_symbol: char,
+    convert: fn(f64) -> f64,
 }
 
 
@@ -17,42 +19,49 @@ fn cel_to_fahr(degrees_c: f64) -> f64 {
 }
 
 
-fn main() {
-    let conversion_menu = vec![
+fn read_conversion_info() -> &'static Conversion {
+    const NUM_CONVERSIONS: usize = 2;
+    static CONVERSION_MENU: [input::MenuItem<Conversion>; NUM_CONVERSIONS] = [
         input::MenuItem {
-            message: String::from("Fahrenheight to Celsius"),
-            data: Conversion::FahrenheightToCelsius
+            label: "Fahrenheight to Celsius",
+            option: &Conversion {
+                source_degree_symbol: 'F',
+                target_degree_symbol: 'C',
+                convert: fahr_to_cel,
+            },
         },
         input::MenuItem {
-            message: String::from("Celsius to Fahrenheight"),
-            data: Conversion::CelsiusToFahrenheight
+            label: "Celsius to Fahrenheight",
+            option: &Conversion {
+                source_degree_symbol: 'C',
+                target_degree_symbol: 'F',
+                convert: cel_to_fahr,
+            },
         },
     ];
 
-    let conversion = input::read_menu_option::<Conversion>(&conversion_menu);
+    input::read_menu_option::<Conversion>(
+        CONVERSION_MENU.iter(),
+        "Select Conversion:"
+    )
+}
 
-    let src_degree_symbol: char;
-    let target_degree_symbol: char;
-    let convert: fn(f64) -> f64;
-    match conversion {
-        Conversion::FahrenheightToCelsius => {
-            src_degree_symbol = 'F';
-            target_degree_symbol = 'C';
-            convert = fahr_to_cel;
-        },
-        Conversion::CelsiusToFahrenheight => {
-            src_degree_symbol = 'C';
-            target_degree_symbol = 'F';
-            convert = cel_to_fahr;
-        },
-    };
 
-    let src_degrees = input::read_value::<f64>(&format!(
-            "Enter temperature (°{src_degree_symbol}):"),
-            "Please enter a valid decimal number.");
-    let target_degrees = convert(src_degrees);
-    println!("{src_degrees}°{src_degree_symbol} is equivalent to \
-             {target_degrees}°{target_degree_symbol}.");
+fn main() {
+    let &Conversion {
+        source_degree_symbol,
+        target_degree_symbol,
+        convert
+    } = read_conversion_info();
+
+    let source_degrees = input::read_value::<f64>(
+        &format!("Enter temperature (°{}):", source_degree_symbol),
+        "Please enter a valid decimal number."
+    );
+    let target_degrees = convert(source_degrees);
+
+    println!("{source_degrees}°{source_degree_symbol} is equivalent to \
+            {target_degrees}°{target_degree_symbol}.");
 }
 
 

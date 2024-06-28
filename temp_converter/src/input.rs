@@ -1,9 +1,13 @@
 use std::io::{self, Write};
+use std::slice::Iter;
+
+pub type Menu<'a, T> = Iter<'a, MenuItem<'a, T>>;
 
 
-pub struct MenuItem<T> {
-    pub message: String,
-    pub data: T,
+#[derive(Copy, Clone, Debug)]
+pub struct MenuItem<'a, T> {
+    pub label: &'a str,
+    pub option: &'a T,
 }
 
 
@@ -31,26 +35,26 @@ pub fn read_value<T: std::str::FromStr>(prompt: &str, err_msg: &str) -> T {
 }
 
 
-pub fn read_menu_option<T>(menu: &Vec<MenuItem<T>>) -> &T {
-    let mut count: usize = 1;
-    for item in menu {
-        println!("{count}. {}", item.message);
-        count += 1;
+pub fn read_menu_option<'a, T>(mut menu: Menu<'a, T>, prompt: &str) -> &'a T {
+    let err_msg = "Please enter a valid option.";
+
+    println!("");
+    for (index, item) in menu.clone().enumerate() {
+        println!("{}. {}", index + 1, item.label);
     }
 
     loop {
-        let selected = read_value::<usize>("Select conversion:",
-                "Please enter a valid option.");
+        let selected = read_value::<usize>(prompt, err_msg);
 
         // explicit check to prevent overflow
         if selected == 0 {
-            println!("Please enter a valid option.");
+            println!("{err_msg}");
             continue;
         }
 
-        match &menu.get(selected - 1) {
-            Some(item) => break &item.data,
-            None => println!("Please enter a valid option."),
+        match menu.nth(selected - 1) {
+            Some(item) => break &item.option,
+            None => println!("{err_msg}"),
         }
     }
 }
