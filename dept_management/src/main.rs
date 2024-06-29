@@ -1,9 +1,9 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 mod input;
 
 type Employee = String;
-type Department = Vec<Employee>;
+type Department = BTreeSet<Employee>;
 type Company = BTreeMap<String, Department>;
 
 #[derive(Copy, Clone, Debug)]
@@ -25,7 +25,7 @@ fn add_new_department(company: &mut Company) -> () {
     if company.contains_key(&department_name) {
         println!("Department '{department_name}' already exists.");
     } else {
-        company.insert(department_name.clone(), Vec::new());
+        company.insert(department_name.clone(), BTreeSet::new());
         println!("Department '{department_name}' successfully added.");
     }
 }
@@ -85,8 +85,7 @@ fn add_employee_to_department(company: &mut Company) -> () {
     if department.contains(&employee_name) {
         println!("Employee '{employee_name}' is already in department '{name}'.");
     } else {
-        department.push(employee_name.clone());
-        department.sort();
+        department.insert(employee_name.clone());
         println!("Employee '{employee_name}' successfully added to department '{name}'.");
     }
 }
